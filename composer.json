@@ -1,0 +1,16 @@
+{
+    "name": "sigop/prm",
+    "description": "SIGOP-PRM",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Hercio07",
+            "email": "Hercioemerson@gmail.com"
+        }
+    ],
+    "require": {
+        "phpmailer/phpmailer": "^7.1",
+        "mpdf/mpdf": "^8.3",
+        "phpoffice/phpspreadsheet": "^5.8"
+    }
+}

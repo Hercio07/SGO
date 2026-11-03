@@ -1,0 +1,20 @@
+Options -Indexes
+RewriteEngine On
+
+# Bloquear acesso a ficheiros sensíveis
+RewriteRule ^(controllers|models|services|views|config|database|vendor|storage|uploads|tests|documentacao)/ - [NC,F,L]
+RewriteRule ^(routes\.php|composer\.(json|lock)|\.git|\.env|\.htaccess) - [NC,F,L]
+
+# Servir ficheiros e diretórios que existem directamente
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Redirecionar tudo para index.php
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+
+# Segurança adicional
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>

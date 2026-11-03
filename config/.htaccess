@@ -1,0 +1,4 @@
+# Impede acesso directo a ficheiros de configuração via HTTP
+<FilesMatch "\.">
+    Require all denied
+</FilesMatch>

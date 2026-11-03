@@ -1,0 +1,10 @@
+# Credenciais e configurações locais
+.env
+
+# Ficheiros gerados durante a utilização
+storage/cache/*.cache
+storage/backups/
+storage/atribuicao_automatica.json
+storage/atribuicao_automatica.log
+uploads/*
+!uploads/.htaccess

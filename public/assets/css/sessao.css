@@ -1,0 +1,18 @@
+.sessao-overlay[hidden] { display:none !important; }
+.sessao-overlay { position:fixed; inset:0; z-index:15000; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(0,0,0,.5); font-family:inherit; font-size:14px; line-height:1.6; }
+.sessao-dialogo { width:100%; max-width:500px; overflow:hidden; border-radius:5px; background:var(--bg-card,#fff); color:var(--text-primary,#25313B); box-shadow:0 8px 24px rgba(0,0,0,.2); }
+.sessao-cabecalho { display:flex; align-items:center; gap:10px; padding:16px; background:#ffc107; color:#212529; }
+.sessao-dialogo h2 { margin:0; font-size:18px; font-weight:700; line-height:1.4; }
+.sessao-corpo { padding:20px 16px; }
+.sessao-dialogo p { margin:0 0 10px; }
+.sessao-dialogo .sessao-contagem { margin:0; color:var(--text-secondary,#6c757d); }
+.sessao-acoes { display:flex; justify-content:flex-end; padding:12px 16px; border-top:1px solid var(--border,#dee2e6); }
+.sessao-acoes button { border:1px solid #2563eb; border-radius:4px; padding:9px 14px; cursor:pointer; font:inherit; font-weight:600; line-height:1.4; }
+#sessao-continuar { background:#2563eb; color:#fff; }
+.sessao-acoes button:focus-visible { outline:3px solid #93c5fd; outline-offset:3px; }
+.sessao-acoes button:disabled { cursor:wait; opacity:.65; }
+#sessao-erro { margin:10px 0 0; color:var(--red-500,#B42318); font-size:13px; }
+#sessao-erro:empty { display:none; }
+body.sessao-em-aviso { overflow:hidden; }
+@media (max-width:480px) { .sessao-acoes button { width:100%; } }
+@media print { .sessao-overlay { display:none !important; } body.sessao-em-aviso { overflow:visible; } }
