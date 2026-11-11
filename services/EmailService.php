@@ -51,45 +51,24 @@ class EmailService {
     }
 
     public static function enviarRecuperacaoSenha(string $toEmail, string $toNome, string $link): bool {
-        $corpo = self::layout(
-            $toNome,
-            'Redefinição de Senha',
-            '
-            <div style="text-align:center;margin:0 0 22px;">
-                <div style="display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;
-                            border-radius:50%;background:var(--prm-orange-bg,rgba(232,119,34,0.1));font-size:28px;">
-                    &#128274;
-                </div>
-            </div>
-            <p style="margin:0 0 16px;font-size:15px;color:#334155;line-height:1.7;text-align:center;">
-                Recebemos um pedido de <strong>redefinição de senha</strong> para a sua conta no SIGOP-PRM.
-                Clique no botão abaixo para definir uma nova senha.
-            </p>
-            <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:14px 18px;margin-bottom:28px;">
-                <p style="margin:0;font-size:12px;color:#92400E;">
-                    &#9201; Este link é válido por <strong>1 hora</strong>. Após esse prazo, terá de solicitar um novo.
-                </p>
-            </div>
-            <div style="text-align:center;margin:0 0 20px;">
+        $assunto = 'Recuperação de Senha — ' . APP_NAME;
+        $corpo = '
+            <p>Olá, <strong>' . e($toNome) . '</strong>.</p>
+            <p>Recebemos um pedido de recuperação de senha para a sua conta.</p>
+            <p>Clique no botão abaixo para definir uma nova senha. O link é válido por <strong>1 hora</strong>.</p>
+            <p style="margin:24px 0;">
                 <a href="' . e($link) . '"
-                   style="display:inline-block;background:linear-gradient(135deg,#E87722,#C8601A);color:#fff;
-                          text-decoration:none;padding:14px 40px;border-radius:10px;font-size:15px;
-                          font-weight:700;letter-spacing:.3px;box-shadow:0 4px 16px rgba(232,119,34,0.35);">
-                    Redefinir Senha
+                   style="background:#CC1230;color:#fff;padding:12px 24px;text-decoration:none;border-radius:4px;font-weight:bold;">
+                   Redefinir Senha
                 </a>
-            </div>
-            <p style="margin:0 0 28px;font-size:11px;color:#94a3b8;line-height:1.6;text-align:center;">
-                Ou copie e cole este link no seu browser:<br>
-                <a href="' . e($link) . '" style="color:#C8601A;word-break:break-all;">' . e($link) . '</a>
             </p>
-            <div style="height:1px;background:linear-gradient(90deg,transparent,#E2E8F0,transparent);margin:0 0 20px;"></div>
-            <p style="margin:0;font-size:12px;color:#94a3b8;line-height:1.7;">
-                &#128737;&#65039; Se não solicitou esta redefinição, pode ignorar este email com segurança — a sua senha permanece inalterada.
-            </p>
-            ',
-            'Clique no link para definir uma nova senha. Válido por 1 hora.'
-        );
-        return self::enviar($toEmail, $toNome, APP_NAME . ' — Redefinição de Senha', $corpo);
+            <p>Se não pediu a recuperação de senha, ignore este email.</p>
+            <hr>
+            <small style="color:#999;">' . e(APP_NAME) . '</small>
+        ';
+        $altBody = 'Aceda ao link para redefinir a sua senha: ' . $link;
+
+        return self::enviar($toEmail, $toNome, $assunto, $corpo, $altBody);
     }
 
     public static function enviarCasoAtribuido(
@@ -386,7 +365,7 @@ class EmailService {
         $mail->getSMTPInstance()->Timelimit = 5;
     }
 
-    private static function enviar(string $toEmail, string $toNome, string $subject, string $body): bool {
+    private static function enviar(string $toEmail, string $toNome, string $subject, string $body, ?string $altBody = null): bool {
         if (empty(MAIL_USER) || empty(MAIL_PASS)) return false;
 
         $mail = self::$ligacaoSMTP ?? new PHPMailer(true);
@@ -397,15 +376,15 @@ class EmailService {
             $mail->setFrom(MAIL_USER, MAIL_FROM_NAME);
             $mail->addAddress($toEmail, $toNome);
 
-            // Logo como imagem embutida (CID)
-            if (file_exists(self::LOGO_PATH)) {
+            // Anexa o logo quando o layout o referencia.
+            if (str_contains($body, 'cid:' . self::LOGO_CID) && file_exists(self::LOGO_PATH)) {
                 $mail->addEmbeddedImage(self::LOGO_PATH, self::LOGO_CID, 'logo.png', 'base64', 'image/png');
             }
 
             $mail->isHTML(true);
             $mail->Subject = $subject;
             $mail->Body    = $body;
-            $mail->AltBody = strip_tags(str_replace(
+            $mail->AltBody = $altBody ?? strip_tags(str_replace(
                 ['<br>', '<br/>', '<br />', '</p>', '</tr>', '</td>'],
                 ["\n", "\n", "\n", "\n", "\n", " "],
                 $body
